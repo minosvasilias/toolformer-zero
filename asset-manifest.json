@@ -1,14 +1,14 @@
 {
   "files": {
-    "main.css": "/toolformer-zero/static/css/main.54dbb5a1.css",
-    "main.js": "/toolformer-zero/static/js/main.e119c3cf.js",
-    "static/media/logo.svg": "/toolformer-zero/static/media/logo.e39816318af5e02a26c4617341e2e997.svg",
-    "index.html": "/toolformer-zero/index.html",
-    "main.54dbb5a1.css.map": "/toolformer-zero/static/css/main.54dbb5a1.css.map",
-    "main.e119c3cf.js.map": "/toolformer-zero/static/js/main.e119c3cf.js.map"
+    "main.css": "/static/css/main.54dbb5a1.css",
+    "main.js": "/static/js/main.3ebf71bc.js",
+    "static/media/logo.svg": "/static/media/logo.e39816318af5e02a26c4617341e2e997.svg",
+    "index.html": "/index.html",
+    "main.54dbb5a1.css.map": "/static/css/main.54dbb5a1.css.map",
+    "main.3ebf71bc.js.map": "/static/js/main.3ebf71bc.js.map"
   },
   "entrypoints": [
     "static/css/main.54dbb5a1.css",
-    "static/js/main.e119c3cf.js"
+    "static/js/main.3ebf71bc.js"
   ]
 }
