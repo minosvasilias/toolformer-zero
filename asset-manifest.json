@@ -1,0 +1,14 @@
+{
+  "files": {
+    "main.css": "/toolformer-zero/static/css/main.54dbb5a1.css",
+    "main.js": "/toolformer-zero/static/js/main.67953859.js",
+    "static/media/logo.svg": "/toolformer-zero/static/media/logo.e39816318af5e02a26c4617341e2e997.svg",
+    "index.html": "/toolformer-zero/index.html",
+    "main.54dbb5a1.css.map": "/toolformer-zero/static/css/main.54dbb5a1.css.map",
+    "main.67953859.js.map": "/toolformer-zero/static/js/main.67953859.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.54dbb5a1.css",
+    "static/js/main.67953859.js"
+  ]
+}
