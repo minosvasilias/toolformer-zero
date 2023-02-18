@@ -56,7 +56,7 @@ function App() {
 		setOpenaiApiKey(_openaiApiKey);
 		setGoogleAppId(_googleAppId);
 		setGoogleApiKey(_googleApiKey);
-		if (wasUserInput) setCookies();
+		if (wasUserInput) setCookies(_openaiApiKey, _googleAppId, _googleApiKey);
 		setSetupCompleted(true);
 	}
 
@@ -81,15 +81,19 @@ function App() {
 		);
 	}
 
-	function setCookies() {
+	function setCookies(
+		_openaiApiKey: string,
+		_googleAppId: string,
+		_googleApiKey: string
+	) {
 		const cookies = new Cookies();
-		cookies.set("openaiApiKey", openaiApiKey, {
+		cookies.set("openaiApiKey", _openaiApiKey, {
 			path: "/",
 		});
-		cookies.set("googleAppId", googleAppId, {
+		cookies.set("googleAppId", _googleAppId, {
 			path: "/",
 		});
-		cookies.set("googleApiKey", googleApiKey, {
+		cookies.set("googleApiKey", _googleApiKey, {
 			path: "/",
 		});
 	}
