@@ -8,7 +8,7 @@ It does so using zero/few-shot prompting. No model-finetuning is needed, instead
 
 **You can find a deployed version of this project on [toolformerzero.com](https://toolformerzero.com).**
 
-Hosted via Github Pages.
+Hosted via GitHub Pages.
 
 ### Run the project yourself
 
