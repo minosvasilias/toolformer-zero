@@ -8,17 +8,13 @@ import {
 	CardHeader,
 } from "@mui/material";
 import React, { useEffect, useRef, useState } from "react";
-import CalculateIcon from "@mui/icons-material/Calculate";
-import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
-import SearchIcon from "@mui/icons-material/Search";
-import PendingIcon from "@mui/icons-material/Pending";
+import QuestionMarkIcon from "@mui/icons-material/QuestionMark";
 import {
 	CompletionItem,
 	CompletionType,
 	getPayload,
 	getToolInput,
 	getToolOutput,
-	ToolType,
 } from "./CompletionItem";
 import {
 	cardContentStyle,
@@ -55,12 +51,10 @@ export function CompletionElement(props: CompletionProps) {
 						.trim()
 						.split(" ")
 						.map((word, index, map) => (
-							<React.Fragment>
-								<CompletionTypography
-									text={word + (index === map.length - 1 ? "" : " ")}
-									index={index}
-								></CompletionTypography>
-							</React.Fragment>
+							<CompletionTypography
+								text={word + (index === map.length - 1 ? "" : " ")}
+								index={index}
+							></CompletionTypography>
 						))}
 				</React.Fragment>
 			);
@@ -72,6 +66,7 @@ export function CompletionElement(props: CompletionProps) {
 			<CompletionTypography
 				text={props.completion.text}
 				color={"red"}
+				index={-1}
 			></CompletionTypography>
 		);
 	}
@@ -105,6 +100,7 @@ function CompletionTool(props: CompletionProps) {
 	}, 50);
 	return (
 		<Box
+			key={props.completion.text}
 			display={"inline-block"}
 			sx={{ opacity: transitionState ? 1 : 0, transition: "all 1000ms" }}
 		>
@@ -132,16 +128,9 @@ function CompletionTool(props: CompletionProps) {
 }
 
 function CompletionIcon(props: CompletionProps) {
-	switch (props.completion.toolType) {
-		case ToolType.MATH:
-			return <CalculateIcon color="primary"></CalculateIcon>;
-		case ToolType.NOW:
-			return <CalendarMonthIcon color="primary"></CalendarMonthIcon>;
-		case ToolType.SEARCH:
-			return <SearchIcon color="primary"></SearchIcon>;
-		default:
-			return <PendingIcon color="primary"></PendingIcon>;
-	}
+	return (
+		props.completion.tool?.getIcon() ?? <QuestionMarkIcon></QuestionMarkIcon>
+	);
 }
 
 function CompletionDetails(props: CompletionDetailsProps) {
@@ -174,13 +163,15 @@ function CompletionDetails(props: CompletionDetailsProps) {
 		>
 			<CardHeader
 				avatar={<CompletionIcon completion={props.completion}></CompletionIcon>}
-				titleTypographyProps={{ sx: { userSelect: "none" } }}
+				titleTypographyProps={{ sx: { userSelect: "none", color: "black" } }}
 				title={getToolInput(props.completion)}
 				sx={cardHeaderStyle}
 			/>
 			<CardContent sx={cardContentStyle}>
-				<Typography variant="caption" sx={{ userSelect: "none" }}>
-					{getToolOutput(props.completion)}
+				<Typography variant="caption">
+					{props.completion.tool
+						? getToolOutput(props.completion)
+						: "Tool not found. :("}
 				</Typography>
 			</CardContent>
 		</Card>
