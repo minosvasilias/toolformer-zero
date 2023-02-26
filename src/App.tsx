@@ -31,12 +31,12 @@ function App() {
 	const [toolSetupActive, setToolSetupActive] = useState(false);
 	const [requestActive, setRequestActive] = useState(false);
 	const [completion, setCompletion] = useState<Array<CompletionItem>>([]);
-	const [activeTools, setActiveTools] = useState<Array<Tool>>([]);
 	const [toast, setToast] = useState("");
 
 	var rawCompletion = useRef("");
 	var newCompletion = useRef("");
 	var curCompletion = useRef<Array<CompletionItem>>([]);
+	var curActiveTools = useRef<Array<Tool>>([]);
 
 	useEffect(() => {
 		if (!setupCompleted) {
@@ -69,14 +69,14 @@ function App() {
 
 	function applyToolParams(tool: Tool, params: { [key: string]: string }) {
 		if (!tool) return;
-		activeTools.forEach((activeTool) => {
+		curActiveTools.current.forEach((activeTool) => {
 			if (activeTool.getUniqueHumanName() == tool.getUniqueHumanName())
 				return activeTool.setParams(params);
 		});
 	}
 
 	function updateActiveTools(tool: Tool, isActive: boolean) {
-		let newActiveTools = [...activeTools];
+		let newActiveTools = [...curActiveTools.current];
 		let index = newActiveTools.findIndex((activeTool) => {
 			return activeTool.getUniqueHumanName() == tool.getUniqueHumanName();
 		});
@@ -90,12 +90,12 @@ function App() {
 				newActiveTools.push(tool);
 			}
 		}
-		setActiveTools(newActiveTools);
+		curActiveTools.current = newActiveTools;
 	}
 
 	function initializeActiveTools(tools?: Array<Tool>) {
-		if (activeTools.length != 0) return;
-		let newActiveTools = tools ? tools : [...activeTools];
+		if (curActiveTools.current.length != 0) return;
+		let newActiveTools = tools ? tools : [...curActiveTools.current];
 
 		const activeToolNames = getActiveToolNames();
 		const toolParams = getToolParams();
@@ -108,7 +108,7 @@ function App() {
 				}
 			});
 		});
-		setActiveTools(newActiveTools);
+		curActiveTools.current = newActiveTools;
 		return newActiveTools;
 	}
 
@@ -130,7 +130,7 @@ function App() {
 		let toolDefinitions = "";
 		let toolExamples = "";
 		//For each tool, add their definitions and examples
-		activeTools.forEach((tool) => {
+		curActiveTools.current.forEach((tool) => {
 			toolDefinitions += `${tool.getName()}: ${tool.getDefinition()}\n`;
 			toolExamples += `User: ${tool.getExamplePrompt()}\nAssistant:${tool.getExampleCompletion()}\n`;
 			//If multi-examples are defined, check for satisfied dependencies before adding
@@ -156,7 +156,7 @@ function App() {
 		let allDependenciesSatisfied = true;
 		tool.getExampleMultiDependencies().forEach((toolName) => {
 			const satisfied =
-				activeTools.findIndex((activeTool) => {
+				curActiveTools.current.findIndex((activeTool) => {
 					return activeTool.getName() == toolName;
 				}) != -1;
 			allDependenciesSatisfied = satisfied ? allDependenciesSatisfied : false;
@@ -309,7 +309,7 @@ function App() {
 
 	function getTool(text: string) {
 		//Get appropriate active tool for completion item if available
-		return activeTools.find((tool) => {
+		return curActiveTools.current.find((tool) => {
 			if (text.includes(tool.getName() + "(")) {
 				return tool;
 			}
@@ -343,7 +343,7 @@ function App() {
 				<img src={logo} width={toolSetupActive ? "0px" : "600px"}></img>
 				{toolSetupActive ? (
 					<ToolSetup
-						tools={activeTools}
+						tools={curActiveTools.current}
 						showErrorToast={showErrorToast}
 						setActive={setToolSetupActive}
 						updateActiveTools={updateActiveTools}
@@ -368,7 +368,7 @@ function App() {
 				) : (
 					<Setup
 						completeSetup={completeSetup}
-						tools={activeTools}
+						tools={curActiveTools.current}
 						showErrorToast={showErrorToast}
 						applyToolParams={applyToolParams}
 					></Setup>
