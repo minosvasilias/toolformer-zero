@@ -27,7 +27,9 @@ import { getActiveToolNames, getToolParam, getToolParams } from "./Cookies";
 import { allTools } from "./tools/base/AllTools";
 
 function App() {
-	const [setupCompleted, setSetupCompleted] = useState(false);
+	const [setupCompleted, setSetupCompleted] = useState<boolean | undefined>(
+		undefined
+	);
 	const [toolSetupActive, setToolSetupActive] = useState(false);
 	const [requestActive, setRequestActive] = useState(false);
 	const [completion, setCompletion] = useState<Array<CompletionItem>>([]);
@@ -109,6 +111,7 @@ function App() {
 			});
 		});
 		curActiveTools.current = newActiveTools;
+		setSetupCompleted(false);
 		return newActiveTools;
 	}
 
