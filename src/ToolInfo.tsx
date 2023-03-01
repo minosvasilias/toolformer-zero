@@ -11,6 +11,7 @@ import {
 	toolInfoBodyStyle,
 	toolInfoExamplesStyle,
 } from "./MuiStyles";
+import { CorsInfo } from "./CorsInfo";
 
 interface InfoProps {
 	tool: Tool;
@@ -69,8 +70,9 @@ export function ToolInfo(props: InfoProps) {
 						{props.tool.getHumanDescription()}
 					</Typography>
 				</Stack>
+				{props.tool.usesCorsProxy() && <CorsInfo></CorsInfo>}
 				<ThemedToggle
-					sx={{ marginLeft: "auto" }}
+					sx={{ marginLeft: props.tool.usesCorsProxy() ? "20px" : "auto" }}
 					value="check"
 					selected={active}
 					onChange={() => {

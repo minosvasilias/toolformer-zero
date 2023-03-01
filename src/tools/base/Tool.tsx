@@ -85,10 +85,16 @@ export abstract class Tool {
 	getExampleMultiDependencies(): Array<string> {
 		return [];
 	}
-
 	//Tools must return an icon as a ReactElement
 	//Preferably these are Material-UI icons
 	abstract getIcon(): ReactElement;
+
+	//For the sake of transparency, tools must override this method and return true if they utilize proxyUrl().
+	//Some users may not be comfortable routing requests through proxies. A badge will be shown
+	//for each tool returning true.
+	usesCorsProxy(): boolean {
+		return false;
+	}
 
 	//Tools may provide an array of string params the must be passed to them
 	//after construction, such as API keys. This may be left empty if none are needed.
