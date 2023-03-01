@@ -111,3 +111,15 @@ export const toolSetupDrawerPaperProps = {
 		backgroundColor: "#00000000",
 	},
 };
+
+export const corsInfoButtonStyle = {
+	marginLeft: "auto",
+	color: "black",
+	textAlign: "left",
+	height: "60px",
+};
+
+export const corsLinkStyle = {
+	overflow: "hidden",
+	transition: "all 200ms",
+};
