@@ -69,12 +69,15 @@ export function removeActiveTool(toolName: string) {
 export function getWindowAiActive() {
 	//Get window.ai setting
 	const cookies = new Cookies();
-	return cookies.get("windowAiActive") == "true" ?? false;
+	return cookies.get("windowAiActive") == "true" && (window as any).ai;
 }
 
-export function storeWindowAiActive(isActive: boolean) {
+export function storeWindowAiActive(isActive: boolean, force = true) {
 	//Save window.ai setting
+	//Only save if force is true or setting is not yet defined
 	const cookies = new Cookies();
+	if (cookies.get("windowAiActive") != undefined && !force) return;
+	isActive = (window as any).ai ? isActive : false;
 	cookies.set("windowAiActive", isActive, {
 		path: "/",
 	});
