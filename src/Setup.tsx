@@ -12,7 +12,7 @@ interface SetupProps {
 	applyToolParams: Function;
 }
 
-const windowAiText = `Instead of specifying an OpenAI key, you can also use the window.ai browser extension to use any model of your choosing! 
+const windowAiText = `Instead of specifying an OpenAI key, you can also install the window.ai browser extension to use any model of your choosing! 
 Please refresh this page after installing the extension.`;
 const windowAiTextAlt = `You're using the window.ai browser extension!
 toolformer-zero will use whichever model you have chosen.`;
