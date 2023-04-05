@@ -13,7 +13,7 @@ import {
 } from "@mui/material";
 import { paramsTextFieldStyle, setupCardStyle } from "./MuiStyles";
 import { Tool } from "./tools/base/Tool";
-import { getToolParam, updateToolParams } from "./Cookies";
+import { getToolParam, getWindowAiActive, updateToolParams } from "./Cookies";
 import { primaryColor } from "./Constants";
 import { useState } from "react";
 
@@ -119,13 +119,15 @@ export function ParamsSetup(props: SetupProps) {
 		return toolParams;
 	}
 
+	function showOpenAiSetup() {
+		return props.completeSetup && !(window as any).ai;
+	}
+
 	function getSteps() {
 		//Get all required steps
 		//This can be default steps on initial setup
 		//as well as all params required by the specified tool(s)
-		const totalSteps: Array<Step> = props.completeSetup
-			? [...defaultSteps]
-			: [];
+		const totalSteps: Array<Step> = showOpenAiSetup() ? [...defaultSteps] : [];
 		props.tools.forEach((tool, index) => {
 			const expectedParams = tool.getExpectedParams();
 			if (expectedParams.length != 0) {

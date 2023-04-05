@@ -56,10 +56,12 @@ function App() {
 	}, []);
 
 	function completeSetup(openaiApiKey: string, wasUserInput: boolean) {
-		setWindowAiActive(getWindowAiActive());
+		setWindowAiActive(initWindowAi());
 		initializeActiveTools();
 
-		if (openaiApiKey?.length != 51) return false;
+		//Conditionals required to skip setup
+		if (getToolParam("Google Search", "googleAppId").length == 0) return false;
+		if (openaiApiKey?.length != 51 && !getWindowAiActive()) return false;
 		setSetupCompleted(true);
 		return true;
 	}
@@ -73,6 +75,13 @@ function App() {
 			}, 5000)
 		);
 		return false;
+	}
+
+	function initWindowAi() {
+		if ((window as any).ai) {
+			storeWindowAiActive(true, false);
+		}
+		return getWindowAiActive();
 	}
 
 	function getCookies() {
@@ -126,6 +135,7 @@ function App() {
 	}
 
 	function updateWindowAiActive(isActive: boolean) {
+		if (!getToolParam("Global", "openaiApiKey") && !isActive) return;
 		storeWindowAiActive(isActive);
 		setWindowAiActive(isActive);
 	}
