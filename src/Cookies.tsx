@@ -65,3 +65,17 @@ export function removeActiveTool(toolName: string) {
 		path: "/",
 	});
 }
+
+export function getWindowAiActive() {
+	//Get window.ai setting
+	const cookies = new Cookies();
+	return cookies.get("windowAiActive") == "true" ?? false;
+}
+
+export function storeWindowAiActive(isActive: boolean) {
+	//Save window.ai setting
+	const cookies = new Cookies();
+	cookies.set("windowAiActive", isActive, {
+		path: "/",
+	});
+}

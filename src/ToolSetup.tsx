@@ -19,6 +19,9 @@ import {
 	toolSetupDrawerPaperProps,
 	toolSetupDrawerStyle,
 } from "./MuiStyles";
+import { ModelListItem } from "./ModelListItem";
+import { WindowAiInfo } from "./WindowAiInfo";
+import { getWindowAiActive } from "./Cookies";
 
 interface SetupProps {
 	tools: Array<Tool>;
@@ -28,6 +31,7 @@ interface SetupProps {
 	setToolResult: Function;
 	setToolError: Function;
 	applyToolParams: Function;
+	updateWindowAiActive: Function;
 }
 
 export function ToolSetup(props: SetupProps) {
@@ -39,7 +43,11 @@ export function ToolSetup(props: SetupProps) {
 		props.updateActiveTools(tool, isActive);
 	}
 
-	const toolInstance = new allTools[activeItem](
+	function updateWindowAiActive(isActive: boolean) {
+		props.updateWindowAiActive(isActive);
+	}
+
+	const toolInstance = new allTools[Math.max(0, activeItem - 1)](
 		props.setToolResult,
 		props.setToolError
 	);
@@ -68,20 +76,36 @@ export function ToolSetup(props: SetupProps) {
 							{availableTools.map((t, index) => (
 								<ToolListItem
 									tool={new t()}
-									index={index}
+									index={index + 1}
 									activeItem={activeItem}
 									setActiveItem={setActiveItem}
 								></ToolListItem>
 							))}
+							<Divider />
+							<ModelListItem
+								name={"window.ai"}
+								index={0}
+								activeItem={activeItem}
+								setActiveItem={setActiveItem}
+								isActive={getWindowAiActive}
+							></ModelListItem>
 						</List>
 					</div>
 				</Drawer>
 			</Box>
-			<ToolInfo
-				updateActive={updateActive}
-				tool={toolInstance}
-				{...props}
-			></ToolInfo>
+			{activeItem === 0 ? (
+				<WindowAiInfo
+					updateActive={updateWindowAiActive}
+					isActive={getWindowAiActive}
+					{...props}
+				></WindowAiInfo>
+			) : (
+				<ToolInfo
+					updateActive={updateActive}
+					tool={toolInstance}
+					{...props}
+				></ToolInfo>
+			)}
 		</Box>
 	);
 }
