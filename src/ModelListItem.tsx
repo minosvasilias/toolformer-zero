@@ -4,10 +4,8 @@ import {
 	ListItemIcon,
 	ListItemText,
 } from "@mui/material";
-import { Tool } from "./tools/base/Tool";
 import { primaryColor } from "./Constants";
 import CheckIcon from "@mui/icons-material/Check";
-import { isToolActive } from "./Cookies";
 import DeveloperBoardIcon from "@mui/icons-material/DeveloperBoard";
 
 interface ListItemProps {

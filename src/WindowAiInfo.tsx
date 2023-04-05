@@ -8,17 +8,13 @@ import {
 } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
 import { Stack } from "@mui/system";
-import { Tool } from "./tools/base/Tool";
 import { primaryColor } from "./Constants";
 import CheckIcon from "@mui/icons-material/Check";
-import { ParamsSetup } from "./ParamsSetup";
-import { addActiveTool, isToolActive, removeActiveTool } from "./Cookies";
 import {
 	toolInfoContainerStyle,
 	toolInfoBodyStyle,
 	toolInfoExamplesStyle,
 } from "./MuiStyles";
-import { CorsInfo } from "./CorsInfo";
 
 interface InfoProps {
 	showErrorToast: Function;
