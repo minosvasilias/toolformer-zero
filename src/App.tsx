@@ -194,7 +194,7 @@ function App() {
 
 	async function getCompletion(final_prompt: string) {
 		rawCompletion.current = final_prompt;
-		if (windowAiActive) {
+		if (getWindowAiActive()) {
 			getWindowAICompletion(
 				final_prompt,
 				(token: string) => handleToken(token),
