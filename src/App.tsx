@@ -23,8 +23,16 @@ import { Tool } from "./tools/base/Tool";
 import { ToolSetup } from "./ToolSetup";
 import { Setup } from "./Setup";
 import ConstructionIcon from "@mui/icons-material/Construction";
-import { getActiveToolNames, getToolParam, getToolParams } from "./Cookies";
+import {
+	getActiveToolNames,
+	getToolParam,
+	getToolParams,
+	getWindowAiActive,
+	storeWindowAiActive,
+} from "./Cookies";
 import { allTools } from "./tools/base/AllTools";
+import { getWindowAICompletion } from "./WindowAi";
+import { getOpenAiCompletion } from "./OpenAi";
 
 function App() {
 	const [setupCompleted, setSetupCompleted] = useState<boolean | undefined>(
@@ -34,6 +42,7 @@ function App() {
 	const [requestActive, setRequestActive] = useState(false);
 	const [completion, setCompletion] = useState<Array<CompletionItem>>([]);
 	const [toast, setToast] = useState("");
+	const [windowAiActive, setWindowAiActive] = useState(false);
 
 	var rawCompletion = useRef("");
 	var newCompletion = useRef("");
@@ -47,6 +56,7 @@ function App() {
 	}, []);
 
 	function completeSetup(openaiApiKey: string, wasUserInput: boolean) {
+		setWindowAiActive(getWindowAiActive());
 		initializeActiveTools();
 
 		if (openaiApiKey?.length != 51) return false;
@@ -115,6 +125,11 @@ function App() {
 		return newActiveTools;
 	}
 
+	function updateWindowAiActive(isActive: boolean) {
+		storeWindowAiActive(isActive);
+		setWindowAiActive(isActive);
+	}
+
 	async function sendPrompt(prompt: string) {
 		//Injects user prompt into template and requests completion
 		if (requestActive) return;
@@ -168,73 +183,33 @@ function App() {
 	}
 
 	async function getCompletion(final_prompt: string) {
-		//Stream completion from OpenAI);
-		var es = await fetch("https://api.openai.com/v1/completions", {
-			headers: {
-				"Content-Type": "application/json",
-				Authorization: "Bearer " + getToolParam("Global", "openaiApiKey"),
-			},
-			method: "POST",
-			body: JSON.stringify({
-				model: "text-davinci-003",
-				prompt: final_prompt,
-				temperature: 0.7,
-				max_tokens: 500,
-				stream: true,
-			}),
-		});
-		const reader = es.body?.pipeThrough(new TextDecoderStream()).getReader();
-		if (!reader) return;
-
-		//Update raw completion to include prompt
-		//(important to continue streams after tool evaluation)
 		rawCompletion.current = final_prompt;
-
-		//Stream completion either until a tool was used or the completion has ended
-		let toolUsed = false;
-		while (!toolUsed) {
-			const res = await reader?.read();
-			toolUsed = await readCompletionStream(res);
-			if (res?.done) break;
+		if (windowAiActive) {
+			getWindowAICompletion(
+				final_prompt,
+				(token: string) => handleToken(token),
+				() => addError()
+			);
+		} else {
+			getOpenAiCompletion(
+				final_prompt,
+				(toolName: string, paramName: string) =>
+					getToolParam(toolName, paramName),
+				(token: string) => handleToken(token),
+				() => addError()
+			);
 		}
-
-		//Allow next request, update UI
-		setRequestActive(toolUsed);
 	}
 
-	async function readCompletionStream(res: ReadableStreamReadResult<string>) {
-		//Parse OpenAI response
-		//Multiple JSON responses may be received in one execution of reader.read()
-		//We therefore sanitize the raw response and then split on newlines
-		const raw_json = res?.value?.replaceAll("data:", "").trim() ?? "";
-		const split_json = raw_json.split("\n");
-		let toolUsed = false;
-		//Attempt to parse each received JSON object
-		split_json.every((json_string) => {
-			json_string = json_string.trim();
-			if (json_string.length > 0) {
-				try {
-					const json = JSON.parse(json_string);
-					//Get completion token(s) received
-					let token: string = json.choices[0].text;
-					//Trim start of completion to avoid ugly whitespace
-					if (newCompletion.current.length == 0) token = token.trimStart();
-					//Amend completion data
-					rawCompletion.current += token;
-					newCompletion.current += token;
-					//Parse current completion
-					toolUsed = parseCompletion();
-				} catch (ex) {
-					//If exception is not caused by OpenAI [DONE] payload, throw error
-					if (json_string.indexOf("[DONE]") == -1) {
-						addError();
-						console.error(ex);
-					}
-				}
-			}
-			//Break out of every() if tool was used
-			return !toolUsed;
-		});
+	function handleToken(token: string) {
+		//Trim start of completion to avoid ugly whitespace
+		if (newCompletion.current.length == 0) token = token.trimStart();
+		//Amend completion data
+		rawCompletion.current += token;
+		newCompletion.current += token;
+		//Parse current completion
+		let toolUsed = parseCompletion();
+		setRequestActive(toolUsed);
 		return toolUsed;
 	}
 
@@ -350,6 +325,9 @@ function App() {
 						showErrorToast={showErrorToast}
 						setActive={setToolSetupActive}
 						updateActiveTools={updateActiveTools}
+						updateWindowAiActive={(isActive: boolean) =>
+							updateWindowAiActive(isActive)
+						}
 						setToolResult={setToolResult}
 						setToolError={setToolError}
 						applyToolParams={applyToolParams}
