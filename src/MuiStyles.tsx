@@ -123,3 +123,12 @@ export const corsLinkStyle = {
 	overflow: "hidden",
 	transition: "all 200ms",
 };
+
+export const altInfoButtonStyle = {
+	color: primaryColor,
+	textAlign: "left",
+	height: "100px",
+	justifyContent: "flex-start",
+};
+
+export const alitInfoTitleStyle = { maxWidth: "420px", color: "#00000099" };
