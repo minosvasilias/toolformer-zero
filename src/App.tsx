@@ -43,6 +43,7 @@ function App() {
 	const [completion, setCompletion] = useState<Array<CompletionItem>>([]);
 	const [toast, setToast] = useState("");
 	const [windowAiActive, setWindowAiActive] = useState(false);
+	const [windowAiAvailable, setWindowAiAvailable] = useState(false);
 
 	var rawCompletion = useRef("");
 	var newCompletion = useRef("");
@@ -50,8 +51,21 @@ function App() {
 	var curActiveTools = useRef<Array<Tool>>([]);
 
 	useEffect(() => {
-		if (!setupCompleted) {
-			getCookies();
+		const onPageLoad = () => {
+			//Delay intialization until document and therefore browser extensions are loaded
+			setWindowAiAvailable((window as any).ai != undefined);
+			if (!setupCompleted) {
+				getCookies();
+			}
+		};
+
+		if (document.readyState === "complete") {
+			//If document is ready, run callback immediately
+			onPageLoad();
+		} else {
+			// Otherwise, wait until load event and remove the event listener when component unmounts
+			window.addEventListener("load", onPageLoad);
+			return () => window.removeEventListener("load", onPageLoad);
 		}
 	}, []);
 
